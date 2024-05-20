@@ -1,9 +1,8 @@
-// C++ program to solve fractional Knapsack Problem
-
 #include <bits/stdc++.h>
 using namespace std;
 
-struct Item {
+struct Item
+{
 	int profit, weight;
 
 	// Constructor
@@ -21,25 +20,22 @@ static bool cmp(struct Item a, struct Item b)
 	return r1 > r2;
 }
 
-double fractionalKnapsack(int W, struct Item arr[], int N)
+double fractionalKnapsack(int W, vector<Item> &arr, int N)
 {
-	sort(arr, arr + N, cmp);
+	sort(arr.begin(), arr.end(), cmp);
 
 	double finalvalue = 0.0;
 
-	for (int i = 0; i < N; i++) {
-		
-		
-		if (arr[i].weight <= W) {
+	for (int i = 0; i < N; i++)
+	{
+		if (arr[i].weight <= W)
+		{
 			W -= arr[i].weight;
 			finalvalue += arr[i].profit;
 		}
-
-		
-		else {
-			finalvalue
-				+= arr[i].profit
-				* ((double)W / (double)arr[i].weight);
+		else
+		{
+			finalvalue += arr[i].profit * ((double)W / (double)arr[i].weight);
 			break;
 		}
 	}
@@ -49,10 +45,21 @@ double fractionalKnapsack(int W, struct Item arr[], int N)
 
 int main()
 {
-	int W = 50;
-	Item arr[] = { { 60, 10 }, { 100, 20 }, { 120, 30 } };
-	int N = sizeof(arr) / sizeof(arr[0]);
+	int W, N;
+	cout << "Enter the capacity of the knapsack: ";
+	cin >> W;
+	cout << "Enter the number of items: ";
+	cin >> N;
 
-	cout << fractionalKnapsack(W, arr, N);
+	vector<Item> arr;
+	cout << "Enter the profit and weight of each item:\n";
+	for (int i = 0; i < N; i++)
+	{
+		int profit, weight;
+		cin >> profit >> weight;
+		arr.emplace_back(profit, weight); // Use emplace_back to construct items in place
+	}
+
+	cout << "Maximum total profit: " << fractionalKnapsack(W, arr, N) << endl;
 	return 0;
 }

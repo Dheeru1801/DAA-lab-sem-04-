@@ -5,42 +5,24 @@
 
 using namespace std;
 
-//for directed graph
-void adj_list(list<int> adj[], int s, int d)
+// Function to convert an adjacency matrix to an adjacency list
+void convertToAdjList(vector<vector<int>> &adjMatrix, vector<list<int>> &adjList)
 {
-    adj[s].push_back(d);
-    
+    int v = adjMatrix.size();
+    for (int i = 0; i < v; i++)
+    {
+        for (int j = 0; j < v; j++)
+        {
+            if (adjMatrix[i][j] == 1)
+            {
+                adjList[i].push_back(j);
+            }
+        }
+    }
 }
 
-
-//dfs traversal 
-
-// void dfs(list<int> adj[], int src,vector<int>&visited)
-// {
-//     stack<int> s;
-//     s.push(src);
-//     visited[src] = 1;
-
-//     while (!s.empty())
-//     {
-//         src = s.top();
-//         s.pop();
-//         cout << src << " ";
-        
-
-//         for (auto a : adj[src])
-//         {
-//             if (visited[a] != 1)
-//             {
-//                 dfs(adj,a,visited);
-//             }
-//         }
-//     }
-// }
-
-
-//finding and printing path between source and destination
-bool dfs(list<int> adj[], int src, int dest, vector<int> &visited, vector<int> &path)
+// Function to find and print path between source and destination using DFS
+bool dfs(vector<list<int>> &adjList, int src, int dest, vector<int> &visited, vector<int> &path)
 {
     stack<int> s;
     s.push(src);
@@ -49,21 +31,21 @@ bool dfs(list<int> adj[], int src, int dest, vector<int> &visited, vector<int> &
     while (!s.empty())
     {
         src = s.top();
-        path.push_back(src); 
+        path.push_back(src);
         s.pop();
 
         if (src == dest)
             return true;
 
-        for (auto a : adj[src])
+        for (auto a : adjList[src])
         {
             if (visited[a] != 1)
             {
                 visited[a] = 1;
-                if (dfs(adj, a, dest, visited, path)) 
+                if (dfs(adjList, a, dest, visited, path))
                     return true;
                 else
-                    path.pop_back(); 
+                    path.pop_back();
             }
         }
     }
@@ -73,33 +55,45 @@ bool dfs(list<int> adj[], int src, int dest, vector<int> &visited, vector<int> &
 
 int main()
 {
-    int v = 5;
-    list<int> adj[v];
-    vector<int>visited(v,0);
-    adj_list(adj, 0, 1);
-    adj_list(adj, 0, 3);
-    adj_list(adj, 1, 4);
-    adj_list(adj, 2, 1);
-    adj_list(adj, 2, 3);
-    adj_list(adj, 2, 4);
-    adj_list(adj, 3, 1);
-    adj_list(adj, 4, 3);
-    int src,dest;
-    cout<<"Enter the source node : ";
-    cin>>src;
-    cout<<"Enter the destination node : ";
-    cin>>dest;
-    vector<int>path;
-    dfs(adj,src,dest,visited,path);
-    if(visited[dest]!=1)
+    int v;
+    cout << "Enter the number of vertices: ";
+    cin >> v;
+
+    vector<vector<int>> adjMatrix(v, vector<int>(v, 0));
+    vector<list<int>> adjList(v);
+
+    cout << "Enter the adjacency matrix (0 or 1): " << endl;
+    for (int i = 0; i < v; i++)
     {
-        cout<<"Path do no exist"<<endl;
+        for (int j = 0; j < v; j++)
+        {
+            cin >> adjMatrix[i][j];
+        }
+    }
+
+    // Convert adjacency matrix to adjacency list
+    convertToAdjList(adjMatrix, adjList);
+
+    int src, dest;
+    cout << "Enter the source node: ";
+    cin >> src;
+    cout << "Enter the destination node: ";
+    cin >> dest;
+
+    vector<int> visited(v, 0);
+    vector<int> path;
+
+    if (dfs(adjList, src, dest, visited, path))
+    {
+        cout << "Path exists: ";
+        for (int i : path)
+            cout << i << " ";
+        cout << endl;
     }
     else
     {
-        cout<<"Path exist : ";
-        for(int i:path)
-            cout<<i<<" ";
+        cout << "Path does not exist" << endl;
     }
+
     return 0;
 }

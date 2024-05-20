@@ -2,86 +2,88 @@
 #include <vector>
 #include <list>
 #include <queue>
+
 using namespace std;
 
-// adjecency list for undirected graph
-void adj_list(list<int> adj[], int s, int d)
+// Function to convert an adjacency matrix to an adjacency list
+void convertToAdjList(vector<vector<int>> &adjMatrix, vector<list<int>> &adjList)
 {
-    adj[s].push_back(d);
-    adj[d].push_back(s);
+    int v = adjMatrix.size();
+    for (int i = 0; i < v; i++)
+    {
+        for (int j = 0; j < v; j++)
+        {
+            if (adjMatrix[i][j] == 1)
+            {
+                adjList[i].push_back(j);
+            }
+        }
+    }
 }
 
-// bfs traversal
-
-// void bfs(list<int> adj[], int src, int v)
-// {
-//     vector<int> visited(v, 0);
-//     queue<int> q;
-//     q.push(src);
-//     visited[src] = 1;
-
-//     while (!q.empty())
-//     {
-//         src = q.front();
-//         cout << src<<" ";
-//         q.pop();
-//         for (auto a : adj[src])
-//         {
-//             if (visited[a] != 1)
-//             {
-//                 q.push(a);
-//                 visited[a] = 1;
-//             }
-//         }
-//     }
-// }
-
-bool isBipartite(list<int>adj[],int src,int v)
+// Function to check if the graph is bipartite
+bool isBipartite(vector<list<int>> &adjList, int src, int v)
 {
-    //initially not colored
-    vector<int>color(v,-1);
-    queue<int>q;
+    vector<int> color(v, -1);
+    queue<int> q;
 
     q.push(src);
-    color[src]=0;
+    color[src] = 0;
 
-    while(!q.empty())
+    while (!q.empty())
     {
-        src=q.front();
+        src = q.front();
         q.pop();
-        for(auto a:adj[src])
+
+        for (auto neighbor : adjList[src])
         {
-            if(color[a]==-1)
+            if (color[neighbor] == -1)
             {
-                color[a]=1-color[src];
-                q.push(a);
+                color[neighbor] = 1 - color[src];
+                q.push(neighbor);
             }
-            else if(color[a]==color[src])
+            else if (color[neighbor] == color[src])
+            {
                 return false;
+            }
         }
     }
     return true;
-
-} 
+}
 
 int main()
 {
-    int v = 9;
-    list<int> adj[v];
+    int v;
+    cout << "Enter the number of vertices: ";
+    cin >> v;
 
-    adj_list(adj, 1, 2);
-    adj_list(adj, 2, 3);
-    adj_list(adj, 2, 6);
-    adj_list(adj, 3, 4);
-    adj_list(adj, 4, 5);
-    adj_list(adj, 4, 7);
-    adj_list(adj, 5, 6);
-    adj_list(adj, 7, 8);
+    vector<vector<int>> adjMatrix(v, vector<int>(v, 0));
+    vector<list<int>> adjList(v);
 
+    cout << "Enter the adjacency matrix (0 or 1): " << endl;
+    for (int i = 0; i < v; i++)
+    {
+        for (int j = 0; j < v; j++)
+        {
+            cin >> adjMatrix[i][j];
+        }
+    }
 
-    if(isBipartite(adj, 1, v))
-        cout<<"The graph is Bipartite"<<endl;
+    // Convert adjacency matrix to adjacency list
+    convertToAdjList(adjMatrix, adjList);
+
+    int src;
+    cout << "Enter the source vertex: ";
+    cin >> src;
+
+    if (isBipartite(adjList, src, v))
+    {
+        cout << "The graph is Bipartite" << endl;
+    }
     else
-        cout<<"The graph is not Bipartite"<<endl;
+    {
+        cout << "The graph is not Bipartite" << endl;
+    }
+
     return 0;
 }

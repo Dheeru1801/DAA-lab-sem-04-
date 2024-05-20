@@ -39,28 +39,30 @@ void floydwarshalAlgo(vector<vector<int>> &adj, int v)
 
 int main()
 {
-    int v = 4;
-    // adjecency matrix initialisation
-    vector<vector<int>> adj{{0, 2, -1, -1},
-                            {1, 0, 3, -1},
-                            {-1, -1, 0, -1},
-                            {3, 5, 4, 0}};
+    int v;
+    cout << "Enter the number of vertices: ";
+    cin >> v;
 
-    // int edges;
-    // for(int i=0;i<edges;i++)
-    // {
-    //     int source;
-    //     int destination;
-    //     int weight;
-    //     cin>>source>>destination<<weight;
-    //     adj[source][destination]=weight;
-    // }
+    // Adjacency matrix initialization
+    vector<vector<int>> adj(v, vector<int>(v));
 
-    floydwarshalAlgo(adj, v);
+    cout << "Enter the adjacency matrix (use -1 for unreachable nodes):\n";
     for (int i = 0; i < v; i++)
     {
-        for (auto a : adj[i])
-            cout << a << " ";
+        for (int j = 0; j < v; j++)
+        {
+            cin >> adj[i][j];
+        }
+    }
+
+    floydwarshalAlgo(adj, v);
+    cout << "Shortest distances between vertices after Floyd-Warshall algorithm:\n";
+    for (int i = 0; i < v; i++)
+    {
+        for (int j = 0; j < v; j++)
+        {
+            cout << adj[i][j] << " ";
+        }
         cout << endl;
     }
 

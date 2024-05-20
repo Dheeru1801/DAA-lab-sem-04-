@@ -1,17 +1,28 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//only for the directed graph....if not then convert it into a directed graph
-void adjList(list<pair<int, int>> adj[], int s, int d, int w)
+// Function to convert an adjacency matrix to an adjacency list with weights
+void convertToAdjList(vector<vector<int>> &adjMatrix, vector<list<pair<int, int>>> &adjList)
 {
-    adj[s].push_back({d, w});
+    int v = adjMatrix.size();
+    for (int i = 0; i < v; i++)
+    {
+        for (int j = 0; j < v; j++)
+        {
+            if (adjMatrix[i][j] != 0)
+            { // assuming 0 means no edge
+                adjList[i].push_back({j, adjMatrix[i][j]});
+            }
+        }
+    }
 }
 
-void createEdge(list<pair<int, int>> adj[], vector<vector<int>> &edge, int v)
+// Function to convert an adjacency list to an edge list
+void createEdge(vector<list<pair<int, int>>> &adjList, vector<vector<int>> &edge, int v)
 {
     for (int i = 0; i < v; i++)
     {
-        for (auto a : adj[i])
+        for (auto a : adjList[i])
         {
             int node = i;
             int adjNode = a.first;
@@ -21,36 +32,35 @@ void createEdge(list<pair<int, int>> adj[], vector<vector<int>> &edge, int v)
     }
 }
 
-
-//only for the directed graph
-vector<int>bellmanfordAlgo(vector<vector<int>>edge, int src,int v,vector<int>&dummyParent)
+// Bellman-Ford algorithm
+vector<int> bellmanFordAlgo(vector<vector<int>> &edge, int src, int v, vector<int> &parent)
 {
-    vector<int>dis(v,INT_MAX);
+    vector<int> dis(v, INT_MAX);
     dis[src] = 0;
-    for(int i=0;i<v-1;i++)
+    for (int i = 0; i < v - 1; i++)
     {
-        for(auto it:edge)
+        for (auto it : edge)
         {
-            int u=it[0];
-            int v=it[1];
-            int w=it[2];
-            if(dis[u]!=INT_MAX&&dis[u]+w<dis[v])
+            int u = it[0];
+            int v = it[1];
+            int w = it[2];
+            if (dis[u] != INT_MAX && dis[u] + w < dis[v])
             {
-                dis[v]=dis[u]+w;
-                dummyParent[v]=u;
+                dis[v] = dis[u] + w;
+                parent[v] = u;
             }
         }
     }
 
-    //Nth relaxation to check for the negitive cycle
-    for(auto it:edge)
+    // Nth relaxation to check for the negative cycle
+    for (auto it : edge)
     {
-        int u=it[0];
-        int v=it[1];
-        int w=it[2];
+        int u = it[0];
+        int v = it[1];
+        int w = it[2];
         if (dis[u] != INT_MAX && dis[u] + w < dis[v])
         {
-            cout<<"Negitive edge cycle found"<<endl;
+            cout << "Negative edge cycle found" << endl;
             return {-1};
         }
     }
@@ -58,49 +68,59 @@ vector<int>bellmanfordAlgo(vector<vector<int>>edge, int src,int v,vector<int>&du
     return dis;
 }
 
-void ultimateParent(vector<int>dummyParent,int node)
+// Function to print the path using the parent vector
+void printPath(vector<int> &parent, int node)
 {
-    if(dummyParent[node]==node)
+    if (parent[node] == node)
     {
-        cout<<node;
+        cout << node;
         return;
     }
-    ultimateParent(dummyParent,dummyParent[node]);
-    cout<<"->"<<node;
+    printPath(parent, parent[node]);
+    cout << " -> " << node;
 }
-
-
 
 int main()
 {
-    int v = 6;
-    list<pair<int, int>> adj[v];
-    vector<int> dis;
-    vector<vector<int>>edge;
+    int v;
+    cout << "Enter the number of vertices: ";
+    cin >> v;
 
-    // adding parent vector to calculate the path
-    vector<int> dummyParent(v);
+    vector<vector<int>> adjMatrix(v, vector<int>(v, 0));
+    vector<list<pair<int, int>>> adjList(v);
+
+    cout << "Enter the adjacency matrix (enter weights, 0 means no edge): " << endl;
     for (int i = 0; i < v; i++)
-        dummyParent[i] = i;
-
-    adjList(adj, 0, 1, 5);
-    adjList(adj, 1, 2, -2);
-    adjList(adj, 2, 4, 3);
-    adjList(adj, 3, 4, -2);
-    adjList(adj, 3, 2, 6);
-    adjList(adj, 5, 3, 1);
-    adjList(adj, 1, 5, -3);
-
-    createEdge(adj,edge,v);
-
-    dis=bellmanfordAlgo(edge, 0,v,dummyParent);
-    
-    for(int i=0;i<v;i++)
     {
-        ultimateParent(dummyParent,i);
-        cout<<" : "<<dis[i]<<endl;
+        for (int j = 0; j < v; j++)
+        {
+            cin >> adjMatrix[i][j];
+        }
     }
-        
+
+    // Convert adjacency matrix to adjacency list
+    convertToAdjList(adjMatrix, adjList);
+
+    vector<vector<int>> edge;
+    createEdge(adjList, edge, v);
+
+    vector<int> parent(v);
+    for (int i = 0; i < v; i++)
+    {
+        parent[i] = i;
+    }
+
+    vector<int> dis = bellmanFordAlgo(edge, 0, v, parent);
+
+    if (dis[0] != -1)
+    {
+        for (int i = 0; i < v; i++)
+        {
+            cout << "Path to " << i << ": ";
+            printPath(parent, i);
+            cout << " - Distance: " << dis[i] << endl;
+        }
+    }
 
     return 0;
 }

@@ -1,4 +1,8 @@
-// Given an already sorted array of positive integers, design an algorithm and implement it using a
+//Name-Dheeraj Chandra
+// University Roll no-2021681
+//Section-DS-1
+
+//Problem Statement: Given an already sorted array of positive integers, design an algorithm and implement it using a
 // program to find whether given key element is present in the array or not. Also, find total number
 // of comparisons for each input case. (Time Complexity = O(logn), where n is the size of input).
 
@@ -29,7 +33,7 @@ void fun(int *arr, int l, int u, int key, int &comparison)
     }
     else
     {
-        cout << "Not Present " << comparison << endl
+        cout << "Not Present " <<endl<< comparison << endl
              << endl;
     }
 }
